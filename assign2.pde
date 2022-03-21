@@ -1,6 +1,6 @@
-final int GAME_START=4, GAME_LOSE=5, GAME_RUN=6;
+final int GAME_START=4, GAME_LOSE=5, GAME_RUN=6; //<>// //<>// //<>//
 final int LIFE_START=2, LIFE_MISS=1, LIFE_ADD=3;
-final int GROUNDHOG_IDLE=0;
+final int GROUNDHOG_IDLE=0, GROUNDHOG_UP=7, GROUNDHOG_DOWN=8, GROUNDHOG_LEFT=9, GROUNDHOG_RIGHT=10;
 
 float groundhogX, groundhogY, groundhogSpeed;
 
@@ -91,6 +91,8 @@ void draw() {
     noStroke();
     //soil
     image(soilImg, 0, 160);
+    //cabbage
+    image(cabbageImg, cabbageX, cabbageY);
 
     //soldier walk
     image(soldierImg, soldierX, soldierY);
@@ -104,17 +106,17 @@ void draw() {
     if (t<15) {
       t++;
       switch(groundhogState) {
-      case DOWN:
+      case GROUNDHOG_DOWN:
         groundhogY += groundhogSpeed/15.0;
         break;
-      case LEFT:
+      case GROUNDHOG_LEFT:
         groundhogX -= groundhogSpeed/15.0;
         break;
-      case RIGHT:
+      case GROUNDHOG_RIGHT:
         groundhogX += groundhogSpeed/15.0;
         break;
       }
-    }else{
+    } else {
       groundhogState = GROUNDHOG_IDLE;
     }
 
@@ -130,24 +132,23 @@ void draw() {
     }
 
     //groundhog display
-    if (keyPressed) {
-      switch(keyCode) {
-      case DOWN:
-        image(downgroundhogImg, groundhogX, groundhogY);
-        break;
-      case LEFT:
-        image(leftgroundhogImg, groundhogX, groundhogY);
-        break;
-      case RIGHT:
-        image(rightgroundhogImg, groundhogX, groundhogY);
-        break;
-      }
-    } else {
+    switch(groundhogState) {
+    case GROUNDHOG_IDLE:
       image(groundhogImg, groundhogX, groundhogY);
+      break;
+    case GROUNDHOG_UP:
+      image(groundhogImg, groundhogX, groundhogY);
+      break;
+    case GROUNDHOG_DOWN:
+      image(downgroundhogImg, groundhogX, groundhogY);
+      break;
+    case GROUNDHOG_LEFT:
+      image(leftgroundhogImg, groundhogX, groundhogY);
+      break;
+    case GROUNDHOG_RIGHT:
+      image(rightgroundhogImg, groundhogX, groundhogY);
+      break;
     }
-
-    //cabbage
-    image(cabbageImg, cabbageX, cabbageY);
 
     switch(LifeState) {
       //start 2 lifes
@@ -160,6 +161,8 @@ void draw() {
         if (groundhogY+80 >soldierY && groundhogY <soldierY+80) {
           groundhogX = 320;
           groundhogY = 80;
+          t=15;
+          groundhogState = GROUNDHOG_IDLE;
           LifeState -= LIFE_MISS\\;//1
           break;
         } else {
@@ -187,6 +190,8 @@ void draw() {
         if (groundhogY+80 >soldierY && groundhogY <soldierY+80) {
           groundhogX = 320;
           groundhogY = 80;
+          t=15;
+          groundhogState = GROUNDHOG_IDLE;
           LifeState = LIFE_START;//2
           break;
         }
@@ -202,6 +207,8 @@ void draw() {
         if (groundhogY+80 >soldierY && groundhogY <soldierY+80) {
           groundhogX = 320;
           groundhogY = 80;
+          t=15;
+          groundhogState = GROUNDHOG_IDLE;
           gameState = GAME_LOSE;//0
           break;
         } else {
@@ -229,11 +236,14 @@ void draw() {
     if (mouseX >248 && mouseX <392 && mouseY >360 && mouseY <420) {
       image(restarthoverImg, 248, 360);
       if (mousePressed) {
-        //click
-        gameState = GAME_RUN;
-        LifeState = LIFE_START;
+        //int variables
+        groundhogSpeed = 80;
+        gameState = GAME_START;
+        LifeState = LIFE_START;//=2
         groundhogX = 320;
         groundhogY = 80;
+        t=15;
+        
         //soldier start
         soldierX = -80;
         soldierY = 160 + floor(random(160, 400))%4*80;
@@ -255,20 +265,18 @@ void keyPressed() {
     t=0;
     println(123);
     switch(keyCode) {
+    case UP:
+      groundhogState = GROUNDHOG_UP;
+      break;
     case DOWN:
-      groundhogY += groundhogSpeed;
+      groundhogState = GROUNDHOG_DOWN;
       break;
     case LEFT:
-      groundhogX -= groundhogSpeed;
+      groundhogState = GROUNDHOG_LEFT;
       break;
     case RIGHT:
-      groundhogX += groundhogSpeed;
+      groundhogState = GROUNDHOG_RIGHT;
       break;
     }
-  } else {
-    groundhogState = GROUNDHOG_IDLE;
   }
-}
-
-void keyReleased() {
 }
